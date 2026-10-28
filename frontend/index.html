@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Homes | Price Predictor</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="/" class="brand">
+            <span class="brand-icon">⌂</span>
+            <span>California<span class="brand-light">Homes</span></span>
+        </a>
+        <span class="status">
+            <span class="status-dot"></span>
+            AI Price Estimator
+        </span>
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="eyebrow">
+                <span>✦</span> SMART REAL ESTATE ANALYTICS
+            </div>
+
+            <h1>Find the value of<br>your <span>next home.</span></h1>
+
+            <p>
+                Discover an estimated property value using your home's
+                location, size, and other details.
+            </p>
+
+            <div class="hero-features">
+                <span>✓ Machine learning powered</span>
+                <span>✓ Instant estimate</span>
+                <span>✓ California housing data</span>
+            </div>
+        </section>
+
+        <section class="prediction-card">
+
+            <div class="card-heading">
+                <div>
+                    <div class="section-label">PROPERTY DETAILS</div>
+                    <h2>Tell us about the property</h2>
+                    <p>Enter all nine details for your estimate.</p>
+                </div>
+                <div class="house-icon">⌂</div>
+            </div>
+
+            <form id="predictionForm">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="longitude">Longitude</label>
+                        <input id="longitude" name="longitude"
+                               type="number" step="any"
+                               value="-120" required>
+                        <small>Geographical longitude</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="latitude">Latitude</label>
+                        <input id="latitude" name="latitude"
+                               type="number" step="any"
+                               value="36" required>
+                        <small>Geographical latitude</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="housing_median_age">Median housing age</label>
+                        <input id="housing_median_age"
+                               name="housing_median_age"
+                               type="number" min="1" max="100"
+                               value="30" required>
+                        <small>Age of homes in the area</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="total_rooms">Total rooms</label>
+                        <input id="total_rooms" name="total_rooms"
+                               type="number" min="1"
+                               value="1000" required>
+                        <small>Total rooms in the area</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="total_bedrooms">Total bedrooms</label>
+                        <input id="total_bedrooms"
+                               name="total_bedrooms"
+                               type="number" min="0"
+                               value="200" required>
+                        <small>Bedrooms in the area</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="population">Population</label>
+                        <input id="population" name="population"
+                               type="number" min="1"
+                               value="500" required>
+                        <small>People in the area</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="households">Households</label>
+                        <input id="households" name="households"
+                               type="number" min="1"
+                               value="180" required>
+                        <small>Households in the area</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="median_income">Median income</label>
+                        <input id="median_income" name="median_income"
+                               type="number" min="0.01" step="any"
+                               value="5" required>
+                        <small>Dataset scale, not dollars</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="ocean_proximity">Ocean proximity</label>
+                        <select id="ocean_proximity"
+                                name="ocean_proximity" required>
+                            <option value="INLAND">Inland</option>
+                            <option value="NEAR BAY">Near Bay</option>
+                            <option value="NEAR OCEAN">Near Ocean</option>
+                            <option value="<1H OCEAN" selected>
+                                Less than 1 hour from ocean
+                            </option>
+                            <option value="ISLAND">Island</option>
+                        </select>
+                        <small>Location category</small>
+                    </div>
+
+                </div>
+
+                <div class="income-note">
+                    <span>ⓘ</span>
+                    Median income uses the original dataset scale.
+                    For example, 5 means approximately $50,000.
+                </div>
+
+                <div id="errorMessage" class="error-message" hidden></div>
+
+                <div class="form-actions">
+                    <button type="reset" class="reset-button">
+                        Reset fields
+                    </button>
+
+                    <button type="submit" id="predictButton"
+                            class="predict-button">
+                        <span id="buttonText">Estimate home value</span>
+                        <span aria-hidden="true"> ↗</span>
+                    </button>
+                </div>
+
+            </form>
+
+            <section id="resultCard" class="result-card" hidden
+                     aria-live="polite">
+                <div class="result-icon">✓</div>
+                <div>
+                    <p class="result-label">ESTIMATED PROPERTY VALUE</p>
+                    <h2 id="predictedPrice">$0</h2>
+                    <p class="result-note">
+                        Model-generated estimate, not a formal appraisal.
+                    </p>
+                </div>
+            </section>
+
+        </section>
+
+        <footer>
+            <span>California Homes · ML Project</span>
+            <span>Powered by your trained Random Forest model</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>
