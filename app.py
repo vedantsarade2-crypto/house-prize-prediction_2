@@ -9,39 +9,35 @@ FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 app = Flask(__name__)
 
-# Load the trained model and preprocessing pipeline
+# Load saved model and preprocessing pipeline
 try:
     model = joblib.load(os.path.join(BASE_DIR, "model.pkl"))
     pipeline = joblib.load(os.path.join(BASE_DIR, "pipeline.pkl"))
     MODEL_ERROR = None
     print("Model and pipeline loaded successfully!")
 
-except Exception as e:
+except Exception as error:
     model = None
     pipeline = None
-    MODEL_ERROR = str(e)
-    print("Model loading error:", MODEL_ERROR)
+    MODEL_ERROR = str(error)
+    print("Model loading failed:", MODEL_ERROR)
 
 
-# Serve the frontend HTML
 @app.route("/")
 def home():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 
-# Serve CSS
 @app.route("/style.css")
 def style():
     return send_from_directory(FRONTEND_DIR, "style.css")
 
 
-# Serve JavaScript
 @app.route("/script.js")
 def script():
     return send_from_directory(FRONTEND_DIR, "script.js")
 
 
-# Check whether the model loaded
 @app.route("/api/health")
 def health():
     return jsonify({
@@ -51,19 +47,16 @@ def health():
     })
 
 
-# Predict house price
 @app.route("/api/predict", methods=["POST"])
 def predict():
     if model is None or pipeline is None:
-        return jsonify({
-            "error": f"Model not loaded: {MODEL_ERROR}"
-        }), 500
+        return jsonify({"error": f"Model loading failed: {MODEL_ERROR}"}), 500
 
     try:
         data = request.get_json(silent=True)
 
         if not data:
-            return jsonify({"error": "No valid input data received"}), 400
+            return jsonify({"error": "Valid JSON input is required"}), 400
 
         features = pd.DataFrame([{
             "longitude": float(data["longitude"]),
@@ -77,22 +70,20 @@ def predict():
             "ocean_proximity": data["ocean_proximity"]
         }])
 
-        processed_features = pipeline.transform(features)
-        predicted_price = model.predict(processed_features)[0]
+        transformed = pipeline.transform(features)
+        price = float(model.predict(transformed)[0])
 
-        return jsonify({
-            "predicted_price": round(float(predicted_price), 2)
-        })
+        return jsonify({"predicted_price": round(price, 2)})
 
-    except KeyError as e:
-        return jsonify({"error": f"Missing field: {e}"}), 400
-
-    except Exception as e:
+    except KeyError as error:
+        return jsonify({"error": f"Missing field: {error}"}), 400
+    except (TypeError, ValueError) as error:
+        return jsonify({"error": f"Invalid input: {error}"}), 400
+    except Exception as error:
         app.logger.exception("Prediction failed")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(error)}), 500
 
 
 if __name__ == "__main__":
-    print("Starting Housing Price Prediction app...")
-    print("Website: http://127.0.0.1:8001")
-    app.run(host="127.0.0.1", port=8001, debug=False)
+    port = int(os.environ.get("PORT", 8001))
+    app.run(host="0.0.0.0", port=port, debug=False)
